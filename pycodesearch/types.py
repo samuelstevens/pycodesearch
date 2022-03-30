@@ -3,4 +3,4 @@ try:
 except ImportError:
     from typing_extensions import Literal  # type: ignore
 
-__all__ = ['Literal']
+__all__ = ["Literal"]
