@@ -4,7 +4,7 @@ import dataclasses
 import os
 import pathlib
 import re
-from typing import Iterator, List, Literal, Optional, Union, Any, Callable
+from typing import Any, Callable, Iterator, List, Literal, Optional, Union
 
 Part = Literal["all", "str"]
 

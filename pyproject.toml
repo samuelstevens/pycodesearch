@@ -11,3 +11,6 @@ dynamic = ["version", "description"]
 
 [project.urls]
 Home = "https://github.com/samuelstevens/pysearch"
+
+[project.scripts]
+pysearch = "pysearch:main"

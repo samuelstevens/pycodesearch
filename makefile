@@ -1,11 +1,11 @@
 all: fmt lint types
 
 fmt:
-	isort search
-	black search
+	isort pysearch
+	black pysearch
 
 lint:
-	flake8 search
+	flake8 pysearch
 
 types:
-	mypy --strict search
+	mypy --strict pysearch
