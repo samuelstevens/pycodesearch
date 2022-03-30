@@ -72,12 +72,12 @@ def load_files(raw_paths: List[str]) -> Iterator[File]:
 
 
 class Searcher(ast.NodeVisitor):
-    def __init__(self, file: File, regexp: re.Pattern[str], options: Options):
+    def __init__(self, file: File, regexp: "re.Pattern[str]", options: Options):
         self.file = file
         self.regexp = regexp
         self.options = options
 
-    def search(self, value: str) -> Union[bool, re.Match[str]]:
+    def search(self, value: str) -> Union[bool, "re.Match[str]"]:
         match = self.regexp.search(value)
         if match is None:
             if self.options.invert_match:
