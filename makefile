@@ -1,11 +1,19 @@
-all: fmt lint types
+all: fmt lint types test tox
 
-fmt:
-	isort pysearch
-	black pysearch
+fmt: FORCE
+	isort pycodesearch
+	black pycodesearch
 
-lint:
-	flake8 pysearch
+lint: FORCE
+	flake8 pycodesearch
 
-types:
-	mypy --strict pysearch
+types: FORCE
+	mypy --strict pycodesearch
+
+test: FORCE
+	pytest
+
+tox: FORCE
+	tox
+
+FORCE:

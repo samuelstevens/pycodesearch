@@ -1,10 +1,11 @@
 import argparse
 import ast
-import dataclasses
 import os
 import pathlib
 import re
-from typing import Any, Callable, Iterator, List, Literal, Optional, Union
+from typing import Any, Callable, Iterator, List, Optional, Union
+
+from .types import Literal
 
 Part = Literal["all", "str"]
 
@@ -13,10 +14,10 @@ def simple_log(*args: Any, **kwargs: Any) -> None:
     print(*args, **kwargs)
 
 
-@dataclasses.dataclass
 class File:
-    content: str
-    path: pathlib.Path
+    def __init__(self, content: str, path: pathlib.Path):
+        self.content = content
+        self.path = path
 
     def parse(self) -> Optional[ast.AST]:
         try:
@@ -49,10 +50,10 @@ def _from_dir(path: pathlib.Path) -> Iterator[File]:
                 yield file
 
 
-@dataclasses.dataclass
 class Options:
-    only_filenames: bool
-    invert_match: bool
+    def __init__(self, only_filenames: bool, invert_match: bool):
+        self.only_filenames = only_filenames
+        self.invert_match = invert_match
 
 
 def new_options(args: argparse.Namespace) -> Options:
