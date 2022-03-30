@@ -6,6 +6,7 @@ import re
 from typing import Any, Callable, Iterator, List, Optional, Union
 
 from .types import Literal
+from .version import version
 
 Part = Literal["all", "str"]
 
@@ -124,8 +125,6 @@ class String(Searcher):
 
         self.report(node, print)
 
-        self.report(node, print)
-
 
 def search(file: File, part: Part, regexp: "re.Pattern[str]", options: Options) -> None:
     tree = file.parse()
@@ -148,7 +147,7 @@ def search_all(
 
 
 def make_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(prog="pycodesearch")
     parser.add_argument("regexp", help="Regular expression pattern to search for.")
     parser.add_argument(
         "part",
@@ -171,6 +170,8 @@ def make_parser() -> argparse.ArgumentParser:
         help="Invert matching. Show nodes that do not match the given patterns.",
     )
 
+    parser.add_argument("--version", action="version", version=f"%(prog)s {version}")
+
     return parser
 
 
@@ -183,7 +184,3 @@ def main() -> None:
     options = new_options(args)
 
     search_all(paths, args.part, regexp, options)
-
-
-if __name__ == "__main__":
-    main()

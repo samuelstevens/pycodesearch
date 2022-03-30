@@ -2,6 +2,6 @@
 
 from .cli import main
 
-__all__ = ["main"]
+from .version import version as __version__
 
-__version__ = "0.1.4"
+__all__ = ["main"]
