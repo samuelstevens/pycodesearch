@@ -4,13 +4,12 @@ import dataclasses
 import os
 import pathlib
 import re
-from typing import Union, List, Literal, Iterator, Optional
-
+from typing import Iterator, List, Literal, Optional, Union, Any, Callable
 
 Part = Literal["all", "str"]
 
 
-def simple_log(*args, **kwargs):
+def simple_log(*args: Any, **kwargs: Any) -> None:
     print(*args, **kwargs)
 
 
@@ -19,14 +18,14 @@ class File:
     content: str
     path: pathlib.Path
 
-    def parse(self):
+    def parse(self) -> Optional[ast.AST]:
         try:
-            return ast.parse(self.content, self.path)
+            return ast.parse(self.content, self.path)  # type: ignore
         except SyntaxError as err:
             simple_log(f"Error parsing {self.path}:", err)
             return None
 
-    def __getitem__(self, i):
+    def __getitem__(self, i: int) -> str:
         lines = [""] + self.content.split("\n")
         return lines[i]
 
@@ -42,7 +41,7 @@ def _from_file(path: pathlib.Path) -> Optional[File]:
 
 def _from_dir(path: pathlib.Path) -> Iterator[File]:
     assert path.is_dir()
-    for dirpath, dirnames, filenames in os.walk(path):
+    for dirpath, _, filenames in os.walk(path):
         for filename in filenames:
             filepath = pathlib.Path(dirpath) / filename
             file = _from_file(filepath)
@@ -73,12 +72,12 @@ def load_files(raw_paths: List[str]) -> Iterator[File]:
 
 
 class Searcher(ast.NodeVisitor):
-    def __init__(self, file: File, regexp: re.Pattern, options: Options):
+    def __init__(self, file: File, regexp: re.Pattern[str], options: Options):
         self.file = file
         self.regexp = regexp
         self.options = options
 
-    def search(self, value) -> Union[bool, re.Match]:
+    def search(self, value: str) -> Union[bool, re.Match[str]]:
         match = self.regexp.search(value)
         if match is None:
             if self.options.invert_match:
@@ -91,18 +90,19 @@ class Searcher(ast.NodeVisitor):
             else:
                 return match
 
-    def report(self, node: ast.AST, printfn):
+    def report(self, node: ast.AST, printfn: Callable[..., None]) -> None:
         printfn(self.file.path)
 
         if self.options.only_filenames:
             return
 
+        assert node.end_lineno is not None
         for lineno in range(node.lineno, node.end_lineno + 1):
             printfn(f"{lineno}:{self.file[lineno]}")
 
 
 class String(Searcher):
-    def visit_Constant(self, node):
+    def visit_Constant(self, node: ast.Constant) -> None:
         super().visit_Constant(node)
 
         if not isinstance(node.value, str):
@@ -130,7 +130,7 @@ def search(file: File, part: Part, pattern: str, options: Options) -> None:
     visitor.visit(tree)
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("regexp", help="Regular expression pattern to search for.")
     parser.add_argument(
@@ -154,7 +154,6 @@ def main():
         help="Invert matching. Show nodes that do not match the given patterns.",
     )
     args = parser.parse_args()
-
 
     options = new_options(args)
 
